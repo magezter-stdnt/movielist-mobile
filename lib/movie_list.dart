@@ -20,7 +20,7 @@ class MovieListState extends State<MovieList> {
     var data = await getJson();
 
     setState(() {
-      movies = data['results'];
+      movies = data['tv_shows'];
     });
   }
 
@@ -68,7 +68,8 @@ class MovieListState extends State<MovieList> {
                       onPressed: () {
                         Navigator.push(context,
                             new MaterialPageRoute(builder: (context) {
-                          return new MovieDetail(movies[i]);
+                          // var temp = getSelectedJson(movies[i]);
+                          return new MovieDetail((movies[i]));
                         }));
                       },
                       // color: Colors.white,
@@ -84,8 +85,16 @@ class MovieListState extends State<MovieList> {
 
 Future<Map> getJson() async {
   var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
-  var url = 'http://api.themoviedb.org/3/discover/movie?api_key=${apiKey}';
+  // var url = 'http://api.themoviedb.org/3/discover/movie?api_key=${apiKey}';
+  var url = 'https://www.episodate.com/api/most-popular?page=12';
   var response = await http.get(Uri.parse(url));
+  return json.decode(response.body);
+}
+
+Future<http.Response> getSelectedJson(var selectedMovie) async {
+  var response = await http.get(Uri.parse(
+      'https://www.episodate.com/api/show-details?q=' + selectedMovie['id']));
+  var data = json.decode(response.body);
   return json.decode(response.body);
 }
 
@@ -136,10 +145,9 @@ class MovieCell extends StatelessWidget {
                 decoration: new BoxDecoration(
                   borderRadius: new BorderRadius.circular(10.0),
                   color: Colors.grey,
-                  image: new DecorationImage(
-                      image: new NetworkImage(
-                          image_url + movies[i]['poster_path']),
-                      fit: BoxFit.cover),
+                  image: new DecorationImage(image: new NetworkImage(
+                      // image_url + movies[i]['poster_path']),
+                      movies[i]['image_thumbnail_path']), fit: BoxFit.cover),
                   boxShadow: [
                     new BoxShadow(
                         color: mainColor,
@@ -155,7 +163,8 @@ class MovieCell extends StatelessWidget {
               child: new Column(
                 children: [
                   new Text(
-                    movies[i]['title'],
+                    // movies[i]['title'],
+                    movies[i]['name'],
                     style: new TextStyle(
                         fontSize: 20.0,
                         fontFamily: 'Arvo',
@@ -164,7 +173,8 @@ class MovieCell extends StatelessWidget {
                   ),
                   new Padding(padding: const EdgeInsets.all(2.0)),
                   new Text(
-                    movies[i]['overview'],
+                    // movies[i]['overview'],
+                    movies[i]['network'],
                     maxLines: 3,
                     style: new TextStyle(
                         color: const Color(0xff8785A4), fontFamily: 'Arvo'),

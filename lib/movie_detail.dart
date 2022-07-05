@@ -41,7 +41,7 @@ class DetailMobilePage extends StatelessWidget {
             Stack(
               children: <Widget>[
                 new Image.network(
-                  image_url + movie['poster_path'],
+                  movie['image_thumbnail_path'],
                   fit: BoxFit.cover,
                 ),
                 SafeArea(
@@ -73,7 +73,7 @@ class DetailMobilePage extends StatelessWidget {
               margin: const EdgeInsets.only(top: 16.0),
               child: Text(
                 // mov.name,
-                movie['title'],
+                movie['name'],
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 30.0,
@@ -93,7 +93,7 @@ class DetailMobilePage extends StatelessWidget {
                       Text(
                         // mov.releaseDate,
 
-                        movie['release_date'],
+                        movie['name'],
                         textAlign: TextAlign.center,
                         style: informationTextStyle,
                       ),
@@ -105,7 +105,7 @@ class DetailMobilePage extends StatelessWidget {
                       const SizedBox(height: 8.0),
                       Text(
                         // mov.rating,
-                        '${movie['vote_average']}/10',
+                        '${movie['name']}/10',
                         textAlign: TextAlign.center,
                         style: informationTextStyle,
                       ),
@@ -117,7 +117,7 @@ class DetailMobilePage extends StatelessWidget {
                       const SizedBox(height: 8.0),
                       Text(
                         // mov.writer,
-                        movie['original_language'],
+                        movie['name'],
                         textAlign: TextAlign.center,
                         style: informationTextStyle,
                       ),
@@ -144,7 +144,7 @@ class DetailMobilePage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                movie['overview'],
+                movie['name'],
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 16.0,
