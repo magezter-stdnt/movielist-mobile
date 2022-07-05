@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:movielist/main_screen.dart';
 import 'package:movielist/model/movie_list.dart';
 
 var informationTextStyle = const TextStyle(fontFamily: 'Oxygen');
@@ -45,7 +46,7 @@ class DetailMobilePage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         CircleAvatar(
-                          backgroundColor: Colors.grey,
+                          backgroundColor: primaryColor,
                           child: IconButton(
                             icon: const Icon(
                               Icons.arrow_back,

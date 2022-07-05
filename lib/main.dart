@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:movielist/main_screen.dart';
-import 'package:http/http.dart' as http;
+import 'movie_list.dart';
 
-void main() => runApp(const MyApp());
 const primaryColor = Color(0xFF151026);
+const borderTopRight = const Radius.circular(10.0);
+const borderBottomRight = const Radius.circular(40.0);
+
+void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Movie List',
-      theme: ThemeData(primaryColor: primaryColor),
-      home: const MainScreen(),
+    return new MaterialApp(
+      title: 'Flutter Demo',
+      home: new MovieList(),
     );
   }
 }
