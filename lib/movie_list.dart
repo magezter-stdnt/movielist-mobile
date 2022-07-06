@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:movielist/model/images_list.dart';
 import 'movie_detail.dart';
 // import 'config.dart';
 
@@ -14,6 +15,8 @@ class MovieList extends StatefulWidget {
 
 class MovieListState extends State<MovieList> {
   var movies;
+  var movie_images;
+  List<Backdrops>? movies_backdrops;
   Color mainColor = const Color(0xff3C3261);
 
   void getData() async {
@@ -23,6 +26,16 @@ class MovieListState extends State<MovieList> {
       movies = data['results'];
     });
   }
+
+  // void getImages(var movieID) async {
+  //   movies_backdrops = await getImagesJson(movieID);
+  //   if (movies_backdrops != null) {
+  //     setState(() {
+  //       print('from get images set stes');
+  //       // movie_images = images['backdrops'];
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +81,8 @@ class MovieListState extends State<MovieList> {
                       onPressed: () {
                         Navigator.push(context,
                             new MaterialPageRoute(builder: (context) {
+                          // getImages(movies[i]['id']);
+                          // Text('test');
                           return new MovieDetail(movies[i]);
                         }));
                       },
@@ -88,6 +103,21 @@ Future<Map> getJson() async {
   var response = await http.get(Uri.parse(url));
   return json.decode(response.body);
 }
+
+// Future<List<Backdrops>> getImagesJson(var movieID) async {
+//   var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
+//   var url =
+//       'https://api.themoviedb.org/3/movie/${movieID}/images?api_key=${apiKey}';
+//   var response = await http.get(Uri.parse(url));
+//   if (response.statusCode == 200) {
+//     print('BISACOK');
+//     print(json.decode(response.body));
+//     return json.decode(response.body);
+//   } else {
+//     print('GABISACOK');
+//     throw new Error();
+//   }
+// }
 
 class MovieTitle extends StatelessWidget {
   final Color mainColor;

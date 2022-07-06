@@ -1,12 +1,18 @@
+import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:movielist/main_screen.dart';
 import 'package:movielist/model/movie_list.dart';
+import 'package:movielist/model/images_list.dart';
+import 'package:http/http.dart' as http;
+import 'package:movielist/movie_list.dart';
 
 var informationTextStyle = const TextStyle(fontFamily: 'Oxygen');
 
 class MovieDetail extends StatelessWidget {
   final movie;
+  // final List<Backdrops>? movieImages;
   var image_url = 'https://image.tmdb.org/t/p/w500/';
   MovieDetail(this.movie);
   Color mainColor = const Color(0xff3C3261);
@@ -25,14 +31,65 @@ class MovieDetail extends StatelessWidget {
   }
 }
 
-class DetailMobilePage extends StatelessWidget {
+class DetailMobilePage extends StatefulWidget {
   final movie;
-  var image_url = 'https://image.tmdb.org/t/p/w500/';
+
   DetailMobilePage(this.movie);
+
+  @override
+  DetailMobilePageState createState() => DetailMobilePageState(this.movie);
+}
+
+class DetailMobilePageState extends State<DetailMobilePage> {
+  final movie;
+
+  DetailMobilePageState(this.movie);
+  // final List<Backdrops>? movieImages;
+  // Backdrops? movie_backdrops;
+  var image_url = 'https://image.tmdb.org/t/p/w500/';
   Color mainColor = const Color(0xff3C3261);
+  late Future<List<Backdrops>> futureBackdrops;
+
+  @override
+
+  // Future<List<MovieImages>> fetchPost() async {
+  //   var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
+  //   final response = await http.get(Uri.parse(
+  //       'https://api.themoviedb.org/3/movie/${movie['id']}/images?api_key=${apiKey}'));
+
+  //   if (response.statusCode == 200) {
+  //     final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
+
+  //     return parsed
+  //         .map<MovieImages>((json) => MovieImages.fromMap(json))
+  //         .toList();
+  //   } else {
+  //     throw Exception('Failed to load album');
+  //   }
+  // }
+
+  // void getImages(var movieID) async {
+  //   // await Future.delayed(Duration(seconds: 3));
+  //   movie_backdrops = await getImagesJson(movieID);
+  //   if (movie_backdrops != null) {
+  //     print('THIS success -> ${movie_backdrops}');
+  //   }
+  //   // else {
+  //   print('THIS fail -> ${movie_backdrops}');
+  //   // }
+  // }
+
+  void initState() {
+    super.initState();
+    futureBackdrops = getImagesJson(movie['id']);
+  }
 
   @override
   Widget build(BuildContext context) {
+    // getImages(movie['id']);
+    // print('ID -> ${movie['id']}');
+    // print('THIS - inside -> ${movie_backdrops}');
+    // print('THIS -> ${movie_backdrops}');
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -126,16 +183,87 @@ class DetailMobilePage extends StatelessWidget {
                 ],
               ),
             ),
+            FutureBuilder<List<Backdrops>>(
+              future: getImagesJson(movie['id']),
+              // initialData: null, // You can set a default value here.
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  // return Text(snapshot.data![0]['filePath']);
+                  return Container(
+                      height: 200,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (BuildContext ctxt, int i) {
+                          return Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                  image_url + snapshot.data![i].filePath),
+                            ),
+                          );
+                        },
+                      ));
+                  // Container(
+                  //   height: 150,
+                  //   child: ListView(
+                  //     scrollDirection: Axis.horizontal,
+                  //     children: movieImages?.map((url) {
+                  //       return Padding(
+                  //         padding: const EdgeInsets.all(4.0),
+                  //         child: ClipRRect(
+                  //           borderRadius: BorderRadius.circular(10),
+                  //           child: Image.network(image_url + url['file_path']),
+                  //         ),
+                  //       );
+                  //     }).toList(),
+                  //   ),
+                  // ),
+                } else if (snapshot.hasError) {
+                  print(snapshot.error);
+                  return Text('${snapshot.error}');
+                }
+
+                // By default, show a loading spinner.
+                return const CircularProgressIndicator();
+              },
+            ),
+            // FutureBuilder<List<Backdrops>?>(
+            //     future: getImagesJson(movie['id']),
+            //     builder: (context, snapshot) {
+            //       if (snapshot.hasData) {
+            //         return Text("data snapshot : ${snapshot.data}");
+            //         // Container(
+            //         //   height: 150,
+            //         //   child: ListView(
+            //         //     scrollDirection: Axis.horizontal,
+            //         //     children: movie_backdrops?.map((url) {
+            //         //       return Padding(
+            //         //         padding: const EdgeInsets.all(4.0),
+            //         //         child: ClipRRect(
+            //         //           borderRadius: BorderRadius.circular(10),
+            //         //           child: Image.network(image_url + url['file_path']),
+            //         //         ),
+            //         //       );
+            //         //     }).toList(),
+            //         //   ),
+            //         // ),
+            //       } else if (snapshot.hasError) {
+            //         return Text('error snapshot : ${snapshot.error}');
+            //       }
+            //       return CircularProgressIndicator();
+            //     }),
             // Container(
             //   height: 150,
             //   child: ListView(
             //     scrollDirection: Axis.horizontal,
-            //     children: mov.imageUrls.map((url) {
+            //     children: movieImages?.map((url) {
             //       return Padding(
             //         padding: const EdgeInsets.all(4.0),
             //         child: ClipRRect(
             //           borderRadius: BorderRadius.circular(10),
-            //           child: Image.network(url),
+            //           child: Image.network(image_url + url['file_path']),
             //         ),
             //       );
             //     }).toList(),
@@ -189,10 +317,11 @@ class DetailMobilePage extends StatelessWidget {
 }
 
 // class DetailWebPage extends StatefulWidget {
-//   final movie;
-//   var image_url = 'https://image.tmdb.org/t/p/w500/';
-//   DetailWebPage(this.movie);
-//   Color mainColor = const Color(0xff3C3261);
+// final movie;
+// final List<Backdrops>? movieImages;
+// var image_url = 'https://image.tmdb.org/t/p/w500/';
+// DetailWebPage(this.movie, this.movieImages);
+// Color mainColor = const Color(0xff3C3261);
 
 //   @override
 //   _DetailWebPageState createState() => _DetailWebPageState();
@@ -374,5 +503,41 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         });
       },
     );
+  }
+}
+
+Future<List<Backdrops>> getImagesJson(var movieID) async {
+  var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
+  var url =
+      'https://api.themoviedb.org/3/movie/${movieID}/images?api_key=${apiKey}';
+  var response = await http.get(Uri.parse(url));
+  if (response.statusCode == 200) {
+    // List<Backdrops> _backdrops = await list.map
+    print('STATUSCODE==200 from movie_detail getImagesJson');
+    // print(json.decode(response.body));
+    // print(json.decode(response.body)['backdrops'][0]['file_path']);
+    // print((json.decode(response.body)['backdrops'])
+    //     .map((json) => Backdrops.fromJson(json))
+    //     .toList());
+    // return (jsonDecode(response.body)['backdrops']);
+    // print((json.decode(response.body)['backdrops'])
+    //     .map((json) => Backdrops.fromJson(json))
+    //     .toList());
+
+    // return (json.decode(response.body)['backdrops'])
+    //     .map((json) => Backdrops.fromJson(json))
+    //     .toList();
+    List<Backdrops> list = List<Backdrops>.from(
+        (json.decode(response.body)['backdrops'])
+            .map((json) => Backdrops.fromJson(json)));
+    print(list);
+    // print(list.length);
+    return list;
+    // return (json.decode(response.body)['backdrops']);
+    // print(json.decode(response.body));
+    // print(json.decode(response.body)[0]);
+  } else {
+    print('STATUSCODE NOT 200 from movie_detail getImagesJson');
+    throw new Error();
   }
 }

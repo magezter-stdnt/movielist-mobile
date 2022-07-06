@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Movie List',
       theme: ThemeData(primaryColor: primaryColor),
-      home: const MainScreen(),
+      home: new MainScreen(),
     );
   }
 }

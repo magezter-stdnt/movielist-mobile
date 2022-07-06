@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:movielist/detail_screen.dart';
 import 'package:movielist/model/movie_list.dart';
+import 'package:http/http.dart' as http;
 
 const primaryColor = Color(0xFF151026);
 const borderTopRight = const Radius.circular(10.0);
 const borderBottomRight = const Radius.circular(40.0);
 
-class MainScreen extends StatelessWidget {
-  const MainScreen({Key? key}) : super(key: key);
+class MainScreen extends StatefulWidget {
+  @override
+  MainScreenState createState() {
+    return new MainScreenState();
+  }
+}
 
+class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
