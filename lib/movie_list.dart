@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:movielist/main.dart';
 import 'package:movielist/model/images_list.dart';
 import 'movie_detail.dart';
-// import 'config.dart';
 
 class MovieList extends StatefulWidget {
   @override
@@ -114,24 +113,7 @@ Future<Map> getJson() async {
   var url =
       'https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1';
   var response = await http.get(Uri.parse(url));
-  // final movs = json.decode(response.body);
-  // print(json.decode(response2.body));
-
-  // return movs;
   return json.decode(response.body);
-}
-
-Future<Map> getJson2() async {
-  var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
-
-  var url2 =
-      'https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=2';
-  var response2 = await http.get(Uri.parse(url2));
-  // final movs = json.decode(response.body);
-  // print(json.decode(response2.body));
-
-  // return movs;
-  return json.decode(response2.body);
 }
 
 class MovieTitle extends StatelessWidget {
@@ -141,19 +123,15 @@ class MovieTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return new Padding(
-    // padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-    // child:
     return new Text(
       'Top Rated',
       style: new TextStyle(
           fontSize: 40.0,
           color: mainColor,
           fontWeight: FontWeight.bold,
-          fontFamily: 'Arvo'),
+          fontFamily: 'Oxygen'),
       textAlign: TextAlign.left,
     );
-    // );
   }
 }
 
@@ -188,17 +166,13 @@ class MovieCell extends StatelessWidget {
                       Text(
                         movies[i]['title'],
                         style: const TextStyle(
-                            fontSize: 20.0, color: primaryColor),
+                            fontSize: 20.0,
+                            color: primaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Oxygen'),
                       ),
                       const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        // MainAxisAlignment.end,
-                        movies[i]['original_language'],
-                      ),
-                      const SizedBox(
-                        height: 30,
+                        height: 3,
                       ),
                       Row(
                         children: <Widget>[
@@ -210,19 +184,18 @@ class MovieCell extends StatelessWidget {
                           ),
                         ],
                       ),
-                      // const SizedBox(
-                      //   height: 10,
-                      // ),
-                      // Row(
-                      //   children: <Widget>[
-                      //     const Icon(Icons.person),
-                      //     const SizedBox(height: 8.0),
-                      //     Text(
-                      //       'test',
-                      //       style: informationTextStyle,
-                      //     ),
-                      //   ],
-                      // ),
+                      const SizedBox(
+                        height: 7,
+                      ),
+                      Text(
+                          movies[i]['overview'].length > 120
+                              ? "${movies[i]['overview'].substring(0, 120)}..."
+                              : movies[i]['overview'],
+                          style: const TextStyle(
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w100,
+                              fontFamily: 'Oxygen'),
+                          textAlign: TextAlign.justify),
                     ],
                   ),
                 ),
