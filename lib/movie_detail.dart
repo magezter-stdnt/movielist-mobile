@@ -205,70 +205,13 @@ class DetailMobilePageState extends State<DetailMobilePage> {
                           );
                         },
                       ));
-                  // Container(
-                  //   height: 150,
-                  //   child: ListView(
-                  //     scrollDirection: Axis.horizontal,
-                  //     children: movieImages?.map((url) {
-                  //       return Padding(
-                  //         padding: const EdgeInsets.all(4.0),
-                  //         child: ClipRRect(
-                  //           borderRadius: BorderRadius.circular(10),
-                  //           child: Image.network(image_url + url['file_path']),
-                  //         ),
-                  //       );
-                  //     }).toList(),
-                  //   ),
-                  // ),
                 } else if (snapshot.hasError) {
                   print(snapshot.error);
                   return Text('${snapshot.error}');
                 }
-
-                // By default, show a loading spinner.
                 return const CircularProgressIndicator();
               },
             ),
-            // FutureBuilder<List<Backdrops>?>(
-            //     future: getImagesJson(movie['id']),
-            //     builder: (context, snapshot) {
-            //       if (snapshot.hasData) {
-            //         return Text("data snapshot : ${snapshot.data}");
-            //         // Container(
-            //         //   height: 150,
-            //         //   child: ListView(
-            //         //     scrollDirection: Axis.horizontal,
-            //         //     children: movie_backdrops?.map((url) {
-            //         //       return Padding(
-            //         //         padding: const EdgeInsets.all(4.0),
-            //         //         child: ClipRRect(
-            //         //           borderRadius: BorderRadius.circular(10),
-            //         //           child: Image.network(image_url + url['file_path']),
-            //         //         ),
-            //         //       );
-            //         //     }).toList(),
-            //         //   ),
-            //         // ),
-            //       } else if (snapshot.hasError) {
-            //         return Text('error snapshot : ${snapshot.error}');
-            //       }
-            //       return CircularProgressIndicator();
-            //     }),
-            // Container(
-            //   height: 150,
-            //   child: ListView(
-            //     scrollDirection: Axis.horizontal,
-            //     children: movieImages?.map((url) {
-            //       return Padding(
-            //         padding: const EdgeInsets.all(4.0),
-            //         child: ClipRRect(
-            //           borderRadius: BorderRadius.circular(10),
-            //           child: Image.network(image_url + url['file_path']),
-            //         ),
-            //       );
-            //     }).toList(),
-            //   ),
-            // ),
             Container(
               padding: const EdgeInsets.all(16.0),
               child: Text(
@@ -512,32 +455,16 @@ Future<List<Backdrops>> getImagesJson(var movieID) async {
       'https://api.themoviedb.org/3/movie/${movieID}/images?api_key=${apiKey}';
   var response = await http.get(Uri.parse(url));
   if (response.statusCode == 200) {
-    // List<Backdrops> _backdrops = await list.map
     print('STATUSCODE==200 from movie_detail getImagesJson');
-    // print(json.decode(response.body));
-    // print(json.decode(response.body)['backdrops'][0]['file_path']);
-    // print((json.decode(response.body)['backdrops'])
-    //     .map((json) => Backdrops.fromJson(json))
-    //     .toList());
-    // return (jsonDecode(response.body)['backdrops']);
-    // print((json.decode(response.body)['backdrops'])
-    //     .map((json) => Backdrops.fromJson(json))
-    //     .toList());
 
-    // return (json.decode(response.body)['backdrops'])
-    //     .map((json) => Backdrops.fromJson(json))
-    //     .toList();
     List<Backdrops> list = List<Backdrops>.from(
         (json.decode(response.body)['backdrops'])
             .map((json) => Backdrops.fromJson(json)));
     print(list);
-    // print(list.length);
     return list;
-    // return (json.decode(response.body)['backdrops']);
-    // print(json.decode(response.body));
-    // print(json.decode(response.body)[0]);
   } else {
     print('STATUSCODE NOT 200 from movie_detail getImagesJson');
+
     throw new Error();
   }
 }

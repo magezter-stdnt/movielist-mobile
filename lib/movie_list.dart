@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:movielist/main.dart';
 import 'package:movielist/model/images_list.dart';
 import 'movie_detail.dart';
 // import 'config.dart';
@@ -16,8 +17,11 @@ class MovieList extends StatefulWidget {
 class MovieListState extends State<MovieList> {
   var movies;
   var movie_images;
-  List<Backdrops>? movies_backdrops;
   Color mainColor = const Color(0xff3C3261);
+
+  final controller = ScrollController();
+  int page = 2;
+  bool isLoading = false;
 
   void getData() async {
     var data = await getJson();
@@ -27,67 +31,75 @@ class MovieListState extends State<MovieList> {
     });
   }
 
-  // void getImages(var movieID) async {
-  //   movies_backdrops = await getImagesJson(movieID);
-  //   if (movies_backdrops != null) {
-  //     setState(() {
-  //       print('from get images set stes');
-  //       // movie_images = images['backdrops'];
-  //     });
-  //   }
-  // }
+  @override
+  void initState() {
+    super.initState();
+    getData(); //fetch data pertamakali
+
+    controller.addListener(() {
+      if (controller.position.maxScrollExtent == controller.offset) {
+        getNewData();
+      }
+    });
+  }
+
+  Future getNewData() async {
+    if (isLoading) return;
+    isLoading = true;
+
+    var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
+    var url =
+        'https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=${page}';
+    var response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      var newMovies = await json.decode(response.body);
+      setState(() {
+        page++;
+        isLoading = false;
+        movies.addAll(newMovies['results']);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    getData();
+    // getData();
 
     return new Scaffold(
       backgroundColor: Colors.white,
-      appBar: new AppBar(
-        elevation: 0.3,
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        leading: new Icon(
-          Icons.arrow_back,
-          color: mainColor,
-        ),
-        title: new Text(
-          'Movies',
-          style: new TextStyle(
-              color: mainColor,
-              fontFamily: 'Arvo',
-              fontWeight: FontWeight.bold),
-        ),
-        actions: <Widget>[
-          new Icon(
-            Icons.menu,
-            color: mainColor,
-          )
-        ],
-      ),
+      appBar: AppBar(
+          backgroundColor: primaryColor,
+          title: Center(
+            child: Text('Movie List'),
+          )),
       body: new Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(15.0),
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            new MovieTitle(mainColor),
+            // new MovieTitle(mainColor),
             new Expanded(
               child: new ListView.builder(
-                  itemCount: movies == null ? 0 : movies.length,
+                  controller: controller,
+                  itemCount: movies == null ? 0 : movies.length + 1,
                   itemBuilder: (context, i) {
-                    return new TextButton(
-                      child: new MovieCell(movies, i),
-                      // padding: const EdgeInsets.all(0.0),
-                      onPressed: () {
-                        Navigator.push(context,
-                            new MaterialPageRoute(builder: (context) {
-                          // getImages(movies[i]['id']);
-                          // Text('test');
-                          return new MovieDetail(movies[i]);
-                        }));
-                      },
-                      // color: Colors.white,
-                    );
+                    if (i < movies.length) {
+                      return new TextButton(
+                        child: new MovieCell(movies, i),
+                        onPressed: () {
+                          Navigator.push(context,
+                              new MaterialPageRoute(builder: (context) {
+                            return new MovieDetail(movies[i]);
+                          }));
+                        },
+                      );
+                    } else {
+                      getNewData();
+                      return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 32),
+                          child: Center(child: CircularProgressIndicator()));
+                    }
                   }),
             )
           ],
@@ -99,25 +111,28 @@ class MovieListState extends State<MovieList> {
 
 Future<Map> getJson() async {
   var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
-  var url = 'http://api.themoviedb.org/3/discover/movie?api_key=${apiKey}';
+  var url =
+      'https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1';
   var response = await http.get(Uri.parse(url));
+  // final movs = json.decode(response.body);
+  // print(json.decode(response2.body));
+
+  // return movs;
   return json.decode(response.body);
 }
 
-// Future<List<Backdrops>> getImagesJson(var movieID) async {
-//   var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
-//   var url =
-//       'https://api.themoviedb.org/3/movie/${movieID}/images?api_key=${apiKey}';
-//   var response = await http.get(Uri.parse(url));
-//   if (response.statusCode == 200) {
-//     print('BISACOK');
-//     print(json.decode(response.body));
-//     return json.decode(response.body);
-//   } else {
-//     print('GABISACOK');
-//     throw new Error();
-//   }
-// }
+Future<Map> getJson2() async {
+  var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
+
+  var url2 =
+      'https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=2';
+  var response2 = await http.get(Uri.parse(url2));
+  // final movs = json.decode(response.body);
+  // print(json.decode(response2.body));
+
+  // return movs;
+  return json.decode(response2.body);
+}
 
 class MovieTitle extends StatelessWidget {
   final Color mainColor;
@@ -126,18 +141,19 @@ class MovieTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-      child: new Text(
-        'Top Rated',
-        style: new TextStyle(
-            fontSize: 40.0,
-            color: mainColor,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Arvo'),
-        textAlign: TextAlign.left,
-      ),
+    // return new Padding(
+    // padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+    // child:
+    return new Text(
+      'Top Rated',
+      style: new TextStyle(
+          fontSize: 40.0,
+          color: mainColor,
+          fontWeight: FontWeight.bold,
+          fontFamily: 'Arvo'),
+      textAlign: TextAlign.left,
     );
+    // );
   }
 }
 
@@ -152,65 +168,78 @@ class MovieCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Column(
       children: <Widget>[
-        new Row(
-          children: <Widget>[
-            new Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: new Container(
-                margin: const EdgeInsets.all(16.0),
-//                                child: new Image.network(image_url+movies[i]['poster_path'],width: 100.0,height: 100.0),
-                child: new Container(
-                  width: 70.0,
-                  height: 70.0,
-                ),
-                decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.circular(10.0),
-                  color: Colors.grey,
-                  image: new DecorationImage(
-                      image: new NetworkImage(
-                          image_url + movies[i]['poster_path']),
-                      fit: BoxFit.cover),
-                  boxShadow: [
-                    new BoxShadow(
-                        color: mainColor,
-                        blurRadius: 5.0,
-                        offset: new Offset(2.0, 5.0))
-                  ],
-                ),
-              ),
+        new Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.only(
+              topRight: borderTopRight,
+              bottomRight: borderBottomRight,
             ),
-            new Expanded(
-                child: new Container(
-              margin: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-              child: new Column(
-                children: [
-                  new Text(
-                    movies[i]['title'],
-                    style: new TextStyle(
-                        fontSize: 20.0,
-                        fontFamily: 'Arvo',
-                        fontWeight: FontWeight.bold,
-                        color: mainColor),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        movies[i]['title'],
+                        style: const TextStyle(
+                            fontSize: 20.0, color: primaryColor),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        // MainAxisAlignment.end,
+                        movies[i]['original_language'],
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          const Icon(Icons.star),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            "${movies[i]['vote_average']}/10",
+                            style: informationTextStyle,
+                          ),
+                        ],
+                      ),
+                      // const SizedBox(
+                      //   height: 10,
+                      // ),
+                      // Row(
+                      //   children: <Widget>[
+                      //     const Icon(Icons.person),
+                      //     const SizedBox(height: 8.0),
+                      //     Text(
+                      //       'test',
+                      //       style: informationTextStyle,
+                      //     ),
+                      //   ],
+                      // ),
+                    ],
                   ),
-                  new Padding(padding: const EdgeInsets.all(2.0)),
-                  new Text(
-                    movies[i]['overview'],
-                    maxLines: 3,
-                    style: new TextStyle(
-                        color: const Color(0xff8785A4), fontFamily: 'Arvo'),
-                  )
-                ],
-                crossAxisAlignment: CrossAxisAlignment.start,
+                ),
               ),
-            )),
-          ],
+              Expanded(
+                flex: 1,
+                child: ClipRRect(
+                  borderRadius: new BorderRadius.only(
+                    topRight: borderTopRight,
+                    bottomRight: borderBottomRight,
+                  ),
+                  child: Image.network(image_url + movies[i]['poster_path']),
+                ),
+              )
+            ],
+          ),
         ),
-        new Container(
-          width: 300.0,
-          height: 0.5,
-          color: const Color(0xD2D2E1ff),
-          margin: const EdgeInsets.all(16.0),
-        )
       ],
     );
   }
