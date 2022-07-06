@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:movielist/main_screen.dart';
-import 'package:movielist/model/movie_list.dart';
+import 'package:movielist/main.dart';
 import 'package:movielist/model/images_list.dart';
 import 'package:http/http.dart' as http;
 import 'package:movielist/movie_list.dart';
@@ -12,7 +11,6 @@ var informationTextStyle = const TextStyle(fontFamily: 'Oxygen');
 
 class MovieDetail extends StatelessWidget {
   final movie;
-  // final List<Backdrops>? movieImages;
   var image_url = 'https://image.tmdb.org/t/p/w500/';
   MovieDetail(this.movie);
   Color mainColor = const Color(0xff3C3261);
@@ -21,11 +19,7 @@ class MovieDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        // if (constraints.maxWidth > 800) {
-        //   // return DetailWebPage(movie);
-        // } else {
         return DetailMobilePage(movie);
-        // }
       },
     );
   }
@@ -44,41 +38,11 @@ class DetailMobilePageState extends State<DetailMobilePage> {
   final movie;
 
   DetailMobilePageState(this.movie);
-  // final List<Backdrops>? movieImages;
-  // Backdrops? movie_backdrops;
   var image_url = 'https://image.tmdb.org/t/p/w500/';
   Color mainColor = const Color(0xff3C3261);
   late Future<List<Backdrops>> futureBackdrops;
 
   @override
-
-  // Future<List<MovieImages>> fetchPost() async {
-  //   var apiKey = 'b61585778dd2dc119337bb02d0a8872f';
-  //   final response = await http.get(Uri.parse(
-  //       'https://api.themoviedb.org/3/movie/${movie['id']}/images?api_key=${apiKey}'));
-
-  //   if (response.statusCode == 200) {
-  //     final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
-
-  //     return parsed
-  //         .map<MovieImages>((json) => MovieImages.fromMap(json))
-  //         .toList();
-  //   } else {
-  //     throw Exception('Failed to load album');
-  //   }
-  // }
-
-  // void getImages(var movieID) async {
-  //   // await Future.delayed(Duration(seconds: 3));
-  //   movie_backdrops = await getImagesJson(movieID);
-  //   if (movie_backdrops != null) {
-  //     print('THIS success -> ${movie_backdrops}');
-  //   }
-  //   // else {
-  //   print('THIS fail -> ${movie_backdrops}');
-  //   // }
-  // }
-
   void initState() {
     super.initState();
     futureBackdrops = getImagesJson(movie['id']);
@@ -86,10 +50,6 @@ class DetailMobilePageState extends State<DetailMobilePage> {
 
   @override
   Widget build(BuildContext context) {
-    // getImages(movie['id']);
-    // print('ID -> ${movie['id']}');
-    // print('THIS - inside -> ${movie_backdrops}');
-    // print('THIS -> ${movie_backdrops}');
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -170,7 +130,7 @@ class DetailMobilePageState extends State<DetailMobilePage> {
                   ),
                   Column(
                     children: <Widget>[
-                      const Icon(Icons.person),
+                      const Icon(Icons.language),
                       const SizedBox(height: 8.0),
                       Text(
                         // mov.writer,
